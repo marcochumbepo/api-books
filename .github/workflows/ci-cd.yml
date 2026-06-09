@@ -1,12 +1,3 @@
-# .github/workflows/ci-cd.yml
-# Pipeline CI/CD con GitHub Actions.
-#
-# Estrategia de ramas:
-#   feature/*, fix/*, hotfix/* → sin CI (solo PR)
-#   develop (push)             → build + test
-#   main    (push)             → build + test + docker build/push + deploy
-#   PR → develop / main        → build + test
-
 name: CI/CD Pipeline
 
 on:
@@ -17,9 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ============================================================
-  # Job 1: Build & Test (comun a develop y main)
-  # ============================================================
   ci:
     name: Build & Test
     runs-on: ubuntu-latest
@@ -28,57 +16,53 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configurar .NET 8
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
 
       - name: Restore
-        run: dotnet restore UsersApi.sln
+        run: dotnet restore ms-books.sln
 
       - name: Build
-        run: dotnet build UsersApi.sln --configuration Release --no-restore
+        run: dotnet build ms-books.sln --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test UsersApi.sln --configuration Release --no-build --verbosity normal
+        run: dotnet test ms-books.sln --configuration Release --no-build --verbosity normal
 
-  # ============================================================
-  # Job 2: Docker Build, Push & Deploy (SOLO push a main)
-  # ============================================================
   docker:
     name: Docker Build, Push & Deploy
     runs-on: ubuntu-latest
     needs: ci
-    # Solo se ejecuta en push a main (no en PR, no en develop)
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Login a Azure
+      - name: Login to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Login a Azure Container Registry
+      - name: Login to Azure Container Registry
         run: az acr login --name ${{ secrets.ACR_NAME }}
 
-      - name: Build y Push imagen Docker
+      - name: Build and Push Docker image
         run: |
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/users-api:${{ github.sha }} .
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/users-api:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/ms-books:${{ github.sha }} .
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/ms-books:${{ github.sha }}
 
-      - name: Deploy a Azure Container Apps
+      - name: Deploy to Azure Container Apps
         run: |
           az containerapp update \
-            --name users-api \
+            --name ms-books \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --image ${{ secrets.ACR_NAME }}.azurecr.io/users-api:${{ github.sha }} \
+            --image ${{ secrets.ACR_NAME }}.azurecr.io/ms-books:${{ github.sha }} \
             --set-env-vars \
               "Database__Provider=InMemory" \
               "ASPNETCORE_ENVIRONMENT=Production" \
               "Jwt__SecretKey=${{ secrets.JWT_SECRET_KEY }}" \
-              "Jwt__Issuer=UsersApi" \
-              "Jwt__Audience=UsersApi" \
+              "Jwt__Issuer=MsBooks" \
+              "Jwt__Audience=MsBooks" \
               "Jwt__ExpirationMinutes=60"

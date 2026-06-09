@@ -1,19 +1,12 @@
-# docker-compose.yml
-# Orquesta la aplicación y opcionalmente SQL Server.
-#
-# Por defecto usa BD en memoria (InMemory). Para usar SQL Server:
-#   1. En .env: Database__Provider=SqlServer
-#   2. Levantar: docker compose --profile sql up -d
 
 services:
   api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: users-api
+    container_name: ms-books-api
     ports:
       - "8080:8080"
-    # Variables de entorno desde .env
     env_file:
       - .env
     depends_on:
@@ -21,7 +14,6 @@ services:
         condition: service_healthy
         required: false
 
-  # SQL Server: solo se levanta con docker compose --profile sql up -d
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver

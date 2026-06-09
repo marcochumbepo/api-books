@@ -1,24 +1,20 @@
-// Application/DependencyInjection.cs
-// Centraliza el registro de servicios de Application en el contenedor DI.
 using Microsoft.Extensions.DependencyInjection;
-using UsersApi.Application.Services;
-using UsersApi.Application.Validators;
+using MsBooks.Application.Services;
+using MsBooks.Application.Validators;
 
-namespace UsersApi.Application;
+namespace MsBooks.Application;
 
 public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        // Registro de servicios como scoped: ciclo de vida alineado con el request HTTP.
-        services.AddScoped<CreateUserService>();
-        services.AddScoped<GetUsersService>();
-        services.AddScoped<GetUserByIdService>();
-        services.AddScoped<DeleteUserService>();
+        services.AddScoped<CreateBookService>();
+        services.AddScoped<GetBooksService>();
+        services.AddScoped<GetBookByIdService>();
+        services.AddScoped<UpdateBookService>();
         services.AddScoped<AuthService>();
 
-        // Registro de validadores FluentValidation como scoped.
-        services.AddScoped<CreateUserRequestValidator>();
+        services.AddScoped<CreateBookRequestValidator>();
 
         return services;
     }

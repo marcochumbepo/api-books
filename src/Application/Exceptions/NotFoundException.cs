@@ -1,7 +1,4 @@
-// Application/Exceptions/NotFoundException.cs
-// Excepción de dominio para cuando un recurso solicitado no existe.
-// El GlobalExceptionMiddleware la captura y retorna HTTP 404 de forma consistente.
-namespace UsersApi.Application.Exceptions;
+namespace MsBooks.Application.Exceptions;
 
 public class NotFoundException : Exception
 {
