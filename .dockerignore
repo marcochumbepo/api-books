@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/.git/
+**/.vs/
+**/.vscode/
+*.suo
+*.md
+.gitignore
+.dockerignore
+.env
+.env.example
+docker-compose.yml
+.vs/
+packages/
+*.nupkg
+**/.DS_Store

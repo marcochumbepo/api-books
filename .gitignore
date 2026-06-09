@@ -1,0 +1,17 @@
+# .NET
+**/bin/
+**/obj/
+*.suo
+.vs/
+.vscode/
+
+# Secrets - .env contiene credenciales reales, no debe versionarse.
+# Usar .env.example como template.
+.env
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
