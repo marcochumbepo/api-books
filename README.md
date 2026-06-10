@@ -67,7 +67,7 @@ cp .env.example .env
 cp .env.example .env
 docker compose up -d
 
-# La API estara disponible en http://localhost:8080
+# La API estara disponible en http://localhost:8080 
 # Swagger: http://localhost:8080/swagger
 # Health:  http://localhost:8080/health
 
